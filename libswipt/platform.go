@@ -45,6 +45,7 @@ type PlatformHandler interface {
 	OnServiceChanged(swiplet string, enabled bool, status string, message string, since int64)
 	OnDatabaseChanged(swiplet string, database string, path string, table string, rowID int64)
 	OnSwipletsChanged()
+	OnSimulatedLocationChanged(active bool)
 	OnAPIFailed(message string)
 	OnShutdownRequested()
 	OnRecordingFailed(message string)
@@ -95,7 +96,8 @@ func NewPlatform(options *PlatformOptions, handler PlatformHandler, deviceOption
 			Logger:            p.logFactory.NewLogger("graphics"),
 			OnRecordingFailed: handler.OnRecordingFailed,
 		}),
-		OnSwipletsChanged: handler.OnSwipletsChanged,
+		OnSwipletsChanged:          handler.OnSwipletsChanged,
+		OnSimulatedLocationChanged: handler.OnSimulatedLocationChanged,
 	})
 	p.device.services = p.host
 	return p

@@ -154,10 +154,14 @@ func (h *Host) storeLocation(location *simulatedLocation) error {
 
 func (h *Host) publishLocation(location *simulatedLocation) {
 	h.locationState.Lock()
-	defer h.locationState.Unlock()
+	activeChanged := (h.location == nil) != (location == nil)
 	h.location = location
 	close(h.locationChanged)
 	h.locationChanged = make(chan struct{})
+	h.locationState.Unlock()
+	if activeChanged && h.options.OnSimulatedLocationChanged != nil {
+		h.options.OnSimulatedLocationChanged(location != nil)
+	}
 }
 
 func (h *Host) currentLocation() (any, <-chan struct{}) {

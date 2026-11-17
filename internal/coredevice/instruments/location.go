@@ -71,3 +71,7 @@ func (l *Location) Close() error {
 func (l *Location) Err() error {
 	return l.conn.Err()
 }
+
+func (l *Location) Done() <-chan struct{} {
+	return l.conn.Done()
+}

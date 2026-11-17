@@ -29,6 +29,7 @@ nonisolated enum PlatformEvent: Sendable {
     case service(swiplet: String, SwipletService)
     case databaseChanged(swiplet: String, database: String, path: String, table: String, rowID: Int64)
     case swipletsChanged
+    case simulatedLocationChanged(Bool)
     case apiFailed(String)
     case shutdownRequested
     case recordingFailed(String)
@@ -66,6 +67,10 @@ nonisolated final class PlatformEvents: NSObject, LibSwiptPlatformHandlerProtoco
 
     func onSwipletsChanged() {
         deliver.withLock { $0 }?(.swipletsChanged)
+    }
+
+    func onSimulatedLocationChanged(_ active: Bool) {
+        deliver.withLock { $0 }?(.simulatedLocationChanged(active))
     }
 
     func onAPIFailed(_ message: String?) {

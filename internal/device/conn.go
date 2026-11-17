@@ -44,8 +44,11 @@ type conn struct {
 	geometryAt     time.Time
 	springboard    atomic.Uint64
 
-	locationAccess sync.Mutex
-	location       *instruments.Location
+	locationAccess  sync.Mutex
+	location        locationClient
+	locationDial    func(context.Context) (locationClient, error)
+	locationMonitor sync.Once
+	locationWake    chan struct{}
 
 	software *hid.Client
 }
@@ -55,6 +58,10 @@ func newConn(s *Connection, session context.Context, device *coredevice.Device, 
 	c := &conn{
 		connection: s, logger: s.logger, device: device, display: displayClient, ctx: ctx, cancel: cancel, owner: owner,
 		events: newEvents(), viewingWake: make(chan struct{}, 1),
+		locationWake: make(chan struct{}, 1),
+		locationDial: func(ctx context.Context) (locationClient, error) {
+			return instruments.DialLocation(ctx, owner, device)
+		},
 	}
 	c.pasteboard = pasteboard.New(ctx, device, s.logger)
 	c.lockState.owner = c

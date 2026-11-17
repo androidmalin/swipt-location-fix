@@ -56,14 +56,15 @@ func (e *IOSOutdatedError) Error() string {
 }
 
 type Options struct {
-	Device            *device.Phone
-	Environment       func() device.Environment
-	Directory         string
-	Caches            string
-	LogFactory        *log.Factory
-	Dialog            Dialog
-	Graphics          Graphics
-	OnSwipletsChanged func()
+	Device                     *device.Phone
+	Environment                func() device.Environment
+	Directory                  string
+	Caches                     string
+	LogFactory                 *log.Factory
+	Dialog                     Dialog
+	Graphics                   Graphics
+	OnSwipletsChanged          func()
+	OnSimulatedLocationChanged func(active bool)
 }
 
 type Host struct {

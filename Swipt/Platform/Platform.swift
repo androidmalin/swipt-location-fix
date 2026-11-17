@@ -21,6 +21,7 @@ final class Platform {
 
     let device: DeviceConnection
     private var calls = 0
+    private var isSimulatingLocation = false
 
     @PerceptionIgnored private let core: LibSwiptPlatform
     @PerceptionIgnored private lazy var assertion: BackgroundAssertion = {
@@ -125,7 +126,7 @@ final class Platform {
         }
     }
 
-    var isActive: Bool { developer.isPublishing || calls > 0 || SwipletStore.shared.hasEnabledServices }
+    var isActive: Bool { developer.isPublishing || calls > 0 || SwipletStore.shared.hasEnabledServices || isSimulatingLocation }
 
     var name: String {
         if let name = PairingStore.shared.device?.name, !name.isEmpty {
@@ -314,6 +315,8 @@ final class Platform {
             SwiptHostModule.send("sqlite", to: swiplet, ["databaseName": database, "databaseFilePath": path, "tableName": table, "rowId": rowID])
         case .swipletsChanged:
             SwipletStore.shared.reload()
+        case .simulatedLocationChanged(let active):
+            isSimulatingLocation = active
         case .apiFailed(let message):
             apiFailed(message)
         case .shutdownRequested:
